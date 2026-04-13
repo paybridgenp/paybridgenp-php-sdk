@@ -42,6 +42,21 @@ class WebhooksResource
     }
 
     /**
+     * Update a webhook endpoint. Any of `url`, `events`, `enabled` may be
+     * partially updated. The signing secret is not rotated — delete and
+     * recreate to get a new secret.
+     *
+     * @param array{url?: string, events?: string[], enabled?: bool} $params
+     *
+     * @return array<string,mixed>
+     */
+    public function update(string $endpointId, array $params): array
+    {
+        $this->requireHttp();
+        return $this->http->patch('/v1/webhooks/' . rawurlencode($endpointId), $params);
+    }
+
+    /**
      * Delete a webhook endpoint.
      *
      * @return array{deleted: bool, id: string}
@@ -50,6 +65,20 @@ class WebhooksResource
     {
         $this->requireHttp();
         return $this->http->delete('/v1/webhooks/' . rawurlencode($endpointId));
+    }
+
+    /**
+     * List recent delivery attempts for a webhook endpoint.
+     *
+     * Useful for debugging "why didn't my webhook fire?" — returns the last
+     * 50 delivery attempts with their status, attempts count, and response.
+     *
+     * @return array{data: array<int, array<string,mixed>>}
+     */
+    public function listDeliveries(string $endpointId): array
+    {
+        $this->requireHttp();
+        return $this->http->get('/v1/webhooks/' . rawurlencode($endpointId) . '/deliveries');
     }
 
     /**
