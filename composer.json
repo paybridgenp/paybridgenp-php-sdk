@@ -1,0 +1,31 @@
+{
+  "name": "paybridge-np/sdk",
+  "description": "Official PHP SDK for PayBridge NP — Nepal payment gateway aggregator",
+  "version": "1.0.0",
+  "type": "library",
+  "keywords": ["paybridge", "nepal", "payment", "esewa", "khalti", "gateway"],
+  "homepage": "https://paybridgenp.com",
+  "license": "MIT",
+  "require": {
+    "php": ">=7.4",
+    "ext-curl": "*",
+    "ext-json": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.0 || ^10.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "PayBridgeNP\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "PayBridgeNP\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit"
+  },
+  "minimum-stability": "stable"
+}
