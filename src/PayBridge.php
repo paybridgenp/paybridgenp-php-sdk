@@ -9,6 +9,7 @@ use PayBridgeNP\Resources\CustomersResource;
 use PayBridgeNP\Resources\InvoicesResource;
 use PayBridgeNP\Resources\PaymentsResource;
 use PayBridgeNP\Resources\PlansResource;
+use PayBridgeNP\Resources\RefundsResource;
 use PayBridgeNP\Resources\SubscriptionsResource;
 use PayBridgeNP\Resources\WebhooksResource;
 
@@ -44,6 +45,9 @@ class PayBridge
 
     /** @var PaymentsResource|null */
     private $paymentsResource;
+
+    /** @var RefundsResource|null */
+    private $refundsResource;
 
     /** @var WebhooksResource|null */
     private $webhooksResource;
@@ -97,6 +101,17 @@ class PayBridge
             $this->paymentsResource = new PaymentsResource($this->httpClient);
         }
         return $this->paymentsResource;
+    }
+
+    /**
+     * Refunds resource — create, list, and retrieve refunds.
+     */
+    public function getRefunds(): RefundsResource
+    {
+        if ($this->refundsResource === null) {
+            $this->refundsResource = new RefundsResource($this->httpClient);
+        }
+        return $this->refundsResource;
     }
 
     /**
@@ -158,12 +173,13 @@ class PayBridge
      * Magic property access for a more fluent API:
      *   $pb->checkout->create(...)
      *   $pb->payments->list()
+     *   $pb->refunds->create(...)
      *   $pb->plans->create(...)
      *   $pb->customers->create(...)
      *   $pb->subscriptions->create(...)
      *   $pb->invoices->list()
      *
-     * @return CheckoutResource|PaymentsResource|WebhooksResource|PlansResource|CustomersResource|SubscriptionsResource|InvoicesResource
+     * @return CheckoutResource|PaymentsResource|RefundsResource|WebhooksResource|PlansResource|CustomersResource|SubscriptionsResource|InvoicesResource
      */
     public function __get(string $name)
     {
@@ -172,6 +188,8 @@ class PayBridge
                 return $this->getCheckout();
             case 'payments':
                 return $this->getPayments();
+            case 'refunds':
+                return $this->getRefunds();
             case 'webhooks':
                 return $this->getWebhooks();
             case 'plans':
