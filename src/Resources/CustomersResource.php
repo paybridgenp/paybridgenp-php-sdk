@@ -92,4 +92,20 @@ class CustomersResource
     {
         return $this->http->delete('/v1/billing/customers/' . rawurlencode($customerId));
     }
+
+    /**
+     * Add (or deduct, with a negative amount) credits to a customer's balance.
+     * Credits are applied automatically against future invoices before payment.
+     *
+     * @param array{amount: int, note?: string|null} $params Amount in paisa (NPR × 100).
+     *
+     * @return array<string,mixed>
+     */
+    public function addCredit(string $customerId, array $params): array
+    {
+        return $this->http->post(
+            '/v1/billing/customers/' . rawurlencode($customerId) . '/credit',
+            $params
+        );
+    }
 }
