@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace PayBridgeNP;
 
 use PayBridgeNP\Resources\CheckoutResource;
+use PayBridgeNP\Resources\CouponsResource;
 use PayBridgeNP\Resources\CustomersResource;
+use PayBridgeNP\Resources\DunningResource;
 use PayBridgeNP\Resources\InvoicesResource;
 use PayBridgeNP\Resources\PaymentsResource;
 use PayBridgeNP\Resources\PlansResource;
+use PayBridgeNP\Resources\PromotionCodesResource;
 use PayBridgeNP\Resources\RefundsResource;
 use PayBridgeNP\Resources\SubscriptionsResource;
 use PayBridgeNP\Resources\WebhooksResource;
@@ -63,6 +66,15 @@ class PayBridge
 
     /** @var InvoicesResource|null */
     private $invoicesResource;
+
+    /** @var CouponsResource|null */
+    private $couponsResource;
+
+    /** @var PromotionCodesResource|null */
+    private $promotionCodesResource;
+
+    /** @var DunningResource|null */
+    private $dunningResource;
 
     /**
      * @param array{
@@ -170,6 +182,40 @@ class PayBridge
     }
 
     /**
+     * Coupons resource (Phase 2) — create / list / get / deactivate coupons.
+     */
+    public function getCoupons(): CouponsResource
+    {
+        if ($this->couponsResource === null) {
+            $this->couponsResource = new CouponsResource($this->httpClient);
+        }
+        return $this->couponsResource;
+    }
+
+    /**
+     * Promotion codes resource (Phase 2) — create / list / get / deactivate /
+     * validate customer-facing codes that redeem coupons.
+     */
+    public function getPromotionCodes(): PromotionCodesResource
+    {
+        if ($this->promotionCodesResource === null) {
+            $this->promotionCodesResource = new PromotionCodesResource($this->httpClient);
+        }
+        return $this->promotionCodesResource;
+    }
+
+    /**
+     * Dunning resource (Phase 3) — policies, invoice retry/stop, subscription assignment.
+     */
+    public function getDunning(): DunningResource
+    {
+        if ($this->dunningResource === null) {
+            $this->dunningResource = new DunningResource($this->httpClient);
+        }
+        return $this->dunningResource;
+    }
+
+    /**
      * Magic property access for a more fluent API:
      *   $pb->checkout->create(...)
      *   $pb->payments->list()
@@ -200,6 +246,13 @@ class PayBridge
                 return $this->getSubscriptions();
             case 'invoices':
                 return $this->getInvoices();
+            case 'coupons':
+                return $this->getCoupons();
+            case 'promotionCodes':
+            case 'promotion_codes':
+                return $this->getPromotionCodes();
+            case 'dunning':
+                return $this->getDunning();
         }
 
         throw new \InvalidArgumentException("Unknown property: {$name}");
