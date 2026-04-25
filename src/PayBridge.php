@@ -12,6 +12,7 @@ use PayBridgeNP\Resources\InvoicesResource;
 use PayBridgeNP\Resources\PaymentsResource;
 use PayBridgeNP\Resources\PlansResource;
 use PayBridgeNP\Resources\PromotionCodesResource;
+use PayBridgeNP\Resources\QrResource;
 use PayBridgeNP\Resources\RefundsResource;
 use PayBridgeNP\Resources\SubscriptionsResource;
 use PayBridgeNP\Resources\WebhooksResource;
@@ -75,6 +76,9 @@ class PayBridge
 
     /** @var DunningResource|null */
     private $dunningResource;
+
+    /** @var QrResource|null */
+    private $qrResource;
 
     /**
      * @param array{
@@ -216,6 +220,18 @@ class PayBridge
     }
 
     /**
+     * QR resource — Direct-QR API for Fonepay (Premium). Returns a QR string
+     * + image and a per-session SSE URL for real-time payment events.
+     */
+    public function getQr(): QrResource
+    {
+        if ($this->qrResource === null) {
+            $this->qrResource = new QrResource($this->httpClient);
+        }
+        return $this->qrResource;
+    }
+
+    /**
      * Magic property access for a more fluent API:
      *   $pb->checkout->create(...)
      *   $pb->payments->list()
@@ -253,6 +269,8 @@ class PayBridge
                 return $this->getPromotionCodes();
             case 'dunning':
                 return $this->getDunning();
+            case 'qr':
+                return $this->getQr();
         }
 
         throw new \InvalidArgumentException("Unknown property: {$name}");

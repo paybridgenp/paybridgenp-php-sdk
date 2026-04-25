@@ -25,7 +25,8 @@ class CheckoutResource
      *   cancel_url?: string,
      *   provider?: string,
      *   currency?: string,
-     *   metadata?: array<string,mixed>
+     *   metadata?: array<string,mixed>,
+     *   collect_address?: bool
      * } $params
      *
      * @return array{
@@ -41,9 +42,10 @@ class CheckoutResource
         $body = [];
         foreach ($params as $key => $value) {
             switch ($key) {
-                case 'return_url': $body['returnUrl']  = $value; break;
-                case 'cancel_url': $body['cancelUrl']  = $value; break;
-                default:           $body[$key]         = $value; break;
+                case 'return_url':       $body['returnUrl']       = $value; break;
+                case 'cancel_url':       $body['cancelUrl']       = $value; break;
+                case 'collect_address':  $body['collectAddress']  = $value; break;
+                default:                 $body[$key]              = $value; break;
             }
         }
         return $this->http->post('/v1/checkout', $body);

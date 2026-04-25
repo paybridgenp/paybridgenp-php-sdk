@@ -1,6 +1,6 @@
-# PayBridge NP — PHP SDK
+# PayBridgeNP — PHP SDK
 
-Official PHP SDK for [PayBridge NP](https://paybridgenp.com) — accept eSewa, Khalti, and ConnectIPS through a single API.
+Official PHP SDK for [PayBridgeNP](https://paybridgenp.com) — accept eSewa, Khalti, and ConnectIPS through a single API.
 
 **Requirements:** PHP 7.4+, `ext-curl`, `ext-json`
 
