@@ -19,11 +19,22 @@ class CheckoutResource
     /**
      * Create a new checkout session.
      *
+     * `flow` controls the customer experience:
+     *  - "hosted" (default) — render the PayBridge picker; `provider`, if set,
+     *    is just pre-selected and the customer can still switch.
+     *  - "redirect" — skip the picker and 302 the customer straight to the
+     *    chosen provider. `provider` is required.
+     *
+     * `cancel_url` is optional. When omitted, cancellations fall back to
+     * `return_url` with `?status=cancelled` appended, and the hosted picker
+     * hides its Cancel link.
+     *
      * @param array{
      *   amount: int,
      *   return_url: string,
      *   cancel_url?: string,
      *   provider?: string,
+     *   flow?: string,
      *   currency?: string,
      *   metadata?: array<string,mixed>,
      *   collect_address?: bool
@@ -32,8 +43,9 @@ class CheckoutResource
      * @return array{
      *   id: string,
      *   checkout_url: string,
-     *   expires_at: string,
-     *   payment_method?: array<string,mixed>
+     *   flow: string,
+     *   provider: ?string,
+     *   expires_at: string
      * }
      */
     public function create(array $params): array
