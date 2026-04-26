@@ -37,6 +37,19 @@ class CheckoutResource
      *   flow?: string,
      *   currency?: string,
      *   metadata?: array<string,mixed>,
+     *   customer?: array{
+     *     name?: string,
+     *     email?: string,
+     *     phone?: string,
+     *     address?: array{
+     *       line1: string,
+     *       line2?: string,
+     *       city: string,
+     *       state?: string,
+     *       postalCode?: string,
+     *       country?: string
+     *     }
+     *   },
      *   collect_address?: bool
      * } $params
      *
