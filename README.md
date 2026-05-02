@@ -79,6 +79,14 @@ $session = $pb->checkout->create([
 
 If you pass `provider` upfront, the response also includes `payment_method` with the direct redirect URL or form fields — useful if you want to skip the hosted page entirely.
 
+### Expire a session
+
+Use this when you mint a fresh session for a logical purchase that already had one outstanding (e.g. a customer requesting a new payment link), so the old URL stops being payable immediately rather than waiting for its 30-minute TTL. Idempotent on already-terminal sessions.
+
+```php
+$pb->checkout->expire('cs_xxxxxxxxxxxxxxxx');
+```
+
 ### Laravel example
 
 ```php

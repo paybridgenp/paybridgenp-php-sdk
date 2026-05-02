@@ -1,7 +1,7 @@
 {
   "name": "paybridge-np/sdk",
   "description": "Official PHP SDK for PayBridge NP — Nepal payment gateway aggregator",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "type": "library",
   "keywords": ["paybridge", "nepal", "payment", "esewa", "khalti", "gateway"],
   "homepage": "https://paybridgenp.com",

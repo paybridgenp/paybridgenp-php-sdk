@@ -75,4 +75,30 @@ class CheckoutResource
         }
         return $this->http->post('/v1/checkout', $body);
     }
+
+    /**
+     * Expire a checkout session so it can no longer accept payment.
+     *
+     * Use this when you mint a fresh checkout session for a logical purchase
+     * that already had one outstanding (e.g. a customer requesting a new
+     * payment link, your reminder system regenerating expired URLs). Without
+     * an explicit expire call, the old URL stays payable until its 30-minute
+     * TTL elapses, which can let a customer who reloads the old tab pay
+     * twice. Mirrors Stripe's `POST /checkout/sessions/{id}/expire`.
+     *
+     * Idempotent: calling on an already-terminal session is a no-op that
+     * returns the current row state without error.
+     *
+     * @return array{
+     *   id: string,
+     *   status: string,
+     *   flow: string,
+     *   provider: ?string,
+     *   expires_at: string
+     * }
+     */
+    public function expire(string $id): array
+    {
+        return $this->http->post('/v1/checkout/' . rawurlencode($id) . '/expire', []);
+    }
 }
