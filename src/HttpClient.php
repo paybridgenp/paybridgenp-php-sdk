@@ -17,7 +17,7 @@ class HttpClient
     private const DEFAULT_MAX_RETRIES = 2;
     private const INITIAL_BACKOFF_MS  = 500;
     private const RETRY_STATUSES      = [500, 502, 503, 504];
-    private const SDK_VERSION         = '0.1.0';
+    private const SDK_VERSION         = '3.0.0';
 
     /** @var string */
     private $baseUrl;
@@ -114,12 +114,10 @@ class HttpClient
                 continue;
             }
 
-            // Non-retryable error — throw typed exception
-            $message = isset($data['error']) && is_string($data['error'])
-                ? $data['error']
-                : 'HTTP ' . $statusCode;
-
-            throw PayBridgeException::fromResponse($message, $statusCode, $data ?: null);
+            // Non-retryable error — parse the nested envelope and throw the
+            // matching typed exception.
+            $retryAfter = $responseHeaders['retry-after'] ?? null;
+            throw PayBridgeException::fromResponse($statusCode, $data ?: null, $retryAfter);
         }
     }
 
