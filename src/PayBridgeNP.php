@@ -18,10 +18,10 @@ use PayBridgeNP\Resources\SubscriptionsResource;
 use PayBridgeNP\Resources\WebhooksResource;
 
 /**
- * PayBridge NP PHP SDK
+ * PayBridgeNP PHP SDK
  *
  * @example
- *   $pb = new PayBridge(['api_key' => 'sk_test_...']);
+ *   $pb = new PayBridgeNP(['api_key' => 'sk_test_...']);
  *
  *   // Create a checkout session
  *   $session = $pb->checkout->create([
@@ -33,13 +33,13 @@ use PayBridgeNP\Resources\WebhooksResource;
  *   header('Location: ' . $session['checkout_url']);
  *
  *   // Verify a webhook
- *   $event = PayBridge::webhooks()->constructEvent(
+ *   $event = PayBridgeNP::webhooks()->constructEvent(
  *       file_get_contents('php://input'),
  *       $_SERVER['HTTP_X_PAYBRIDGE_SIGNATURE'] ?? null,
  *       'whsec_...'
  *   );
  */
-class PayBridge
+class PayBridgeNP
 {
     /** @var HttpClient */
     private $httpClient;
@@ -280,7 +280,7 @@ class PayBridge
      * Static shortcut for webhook signature verification — no API key needed.
      *
      * @example
-     *   $event = PayBridge::webhooks()->constructEvent(
+     *   $event = PayBridgeNP::webhooks()->constructEvent(
      *       file_get_contents('php://input'),
      *       $_SERVER['HTTP_X_PAYBRIDGE_SIGNATURE'] ?? null,
      *       'whsec_...'

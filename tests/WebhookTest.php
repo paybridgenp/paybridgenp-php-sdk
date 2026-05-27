@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace PayBridgeNP\Tests;
 
 use PHPUnit\Framework\TestCase;
-use PayBridgeNP\PayBridge;
+use PayBridgeNP\PayBridgeNP;
 use PayBridgeNP\Resources\WebhooksResource;
 use PayBridgeNP\Exceptions\SignatureVerificationException;
 
@@ -21,7 +21,7 @@ class WebhookTest extends TestCase
 
     public function testStaticWebhooksReturnsResource(): void
     {
-        $this->assertInstanceOf(WebhooksResource::class, PayBridge::webhooks());
+        $this->assertInstanceOf(WebhooksResource::class, PayBridgeNP::webhooks());
     }
 
     public function testValidSignatureReturnsEvent(): void
@@ -30,7 +30,7 @@ class WebhookTest extends TestCase
         $timestamp = time();
         $signature = $this->makeSignature($payload, $timestamp);
 
-        $event = PayBridge::webhooks()->constructEvent($payload, $signature, self::SECRET);
+        $event = PayBridgeNP::webhooks()->constructEvent($payload, $signature, self::SECRET);
 
         $this->assertSame('evt_123', $event['id']);
         $this->assertSame('payment.succeeded', $event['type']);
@@ -39,16 +39,16 @@ class WebhookTest extends TestCase
     public function testMissingSignatureThrows(): void
     {
         $this->expectException(SignatureVerificationException::class);
-        $this->expectExceptionMessage('Missing X-PayBridge-Signature header');
+        $this->expectExceptionMessage('Missing X-PayBridgeNP-Signature header');
 
-        PayBridge::webhooks()->constructEvent('{}', null, self::SECRET);
+        PayBridgeNP::webhooks()->constructEvent('{}', null, self::SECRET);
     }
 
     public function testEmptySignatureThrows(): void
     {
         $this->expectException(SignatureVerificationException::class);
 
-        PayBridge::webhooks()->constructEvent('{}', '', self::SECRET);
+        PayBridgeNP::webhooks()->constructEvent('{}', '', self::SECRET);
     }
 
     public function testMalformedSignatureThrows(): void
@@ -56,7 +56,7 @@ class WebhookTest extends TestCase
         $this->expectException(SignatureVerificationException::class);
         $this->expectExceptionMessage('Malformed');
 
-        PayBridge::webhooks()->constructEvent('{}', 'not-a-valid-signature', self::SECRET);
+        PayBridgeNP::webhooks()->constructEvent('{}', 'not-a-valid-signature', self::SECRET);
     }
 
     public function testWrongSecretThrows(): void
@@ -68,7 +68,7 @@ class WebhookTest extends TestCase
         $this->expectException(SignatureVerificationException::class);
         $this->expectExceptionMessage('signature verification failed');
 
-        PayBridge::webhooks()->constructEvent($payload, $signature, 'whsec_wrong_secret');
+        PayBridgeNP::webhooks()->constructEvent($payload, $signature, 'whsec_wrong_secret');
     }
 
     public function testTamperedPayloadThrows(): void
@@ -81,7 +81,7 @@ class WebhookTest extends TestCase
 
         $this->expectException(SignatureVerificationException::class);
 
-        PayBridge::webhooks()->constructEvent($tamperedPayload, $signature, self::SECRET);
+        PayBridgeNP::webhooks()->constructEvent($tamperedPayload, $signature, self::SECRET);
     }
 
     public function testOldTimestampThrows(): void
@@ -93,7 +93,7 @@ class WebhookTest extends TestCase
         $this->expectException(SignatureVerificationException::class);
         $this->expectExceptionMessage('Timestamp too old');
 
-        PayBridge::webhooks()->constructEvent($payload, $signature, self::SECRET);
+        PayBridgeNP::webhooks()->constructEvent($payload, $signature, self::SECRET);
     }
 
     public function testFutureTimestampWithinWindowSucceeds(): void
@@ -102,7 +102,7 @@ class WebhookTest extends TestCase
         $timestamp = time() + 60; // 60 seconds in the future — within 300s window
         $signature = $this->makeSignature($payload, $timestamp);
 
-        $event = PayBridge::webhooks()->constructEvent($payload, $signature, self::SECRET);
+        $event = PayBridgeNP::webhooks()->constructEvent($payload, $signature, self::SECRET);
         $this->assertSame('payment.failed', $event['type']);
     }
 
@@ -115,7 +115,7 @@ class WebhookTest extends TestCase
         $this->expectException(SignatureVerificationException::class);
         $this->expectExceptionMessage('Invalid webhook payload');
 
-        PayBridge::webhooks()->constructEvent($payload, $signature, self::SECRET);
+        PayBridgeNP::webhooks()->constructEvent($payload, $signature, self::SECRET);
     }
 
     public function testConstructorRequiresApiKey(): void
@@ -123,7 +123,7 @@ class WebhookTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('api_key is required');
 
-        new PayBridge([]);
+        new PayBridgeNP([]);
     }
 
     public function testWebhooksInstanceMethodRequiresHttpClient(): void
@@ -131,6 +131,6 @@ class WebhookTest extends TestCase
         $this->expectException(\RuntimeException::class);
 
         // Static webhooks() has no HTTP client — calling create() should throw
-        PayBridge::webhooks()->create(['url' => 'https://example.com']);
+        PayBridgeNP::webhooks()->create(['url' => 'https://example.com']);
     }
 }
