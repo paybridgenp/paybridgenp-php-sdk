@@ -20,7 +20,7 @@ class CheckoutResource
      * Create a new checkout session.
      *
      * `flow` controls the customer experience:
-     *  - "hosted" (default) — render the PayBridge picker; `provider`, if set,
+     *  - "hosted" (default) — render the PayBridgeNP picker; `provider`, if set,
      *    is just pre-selected and the customer can still switch.
      *  - "redirect" — skip the picker and 302 the customer straight to the
      *    chosen provider. `provider` is required.

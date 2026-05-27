@@ -17,9 +17,9 @@ composer require paybridge-np/sdk
 ## Quick Start
 
 ```php
-use PayBridgeNP\PayBridge;
+use PayBridgeNP\PayBridgeNP;
 
-$pb = new PayBridge(['api_key' => 'sk_test_...']);
+$pb = new PayBridgeNP(['api_key' => 'sk_test_...']);
 
 $session = $pb->checkout->create([
     'amount'     => 5000,          // NPR 50.00 — always in paisa (NPR × 100)
@@ -43,7 +43,7 @@ https://myshop.com/thank-you?session_id=cs_xxx&status=success&payment_id=pay_xxx
 ## Configuration
 
 ```php
-$pb = new PayBridge([
+$pb = new PayBridgeNP([
     'api_key'     => 'sk_live_...',              // required
     'base_url'    => 'https://api.paybridgenp.com', // optional, default shown
     'timeout'     => 30,                         // optional, seconds (default: 30)
@@ -92,7 +92,7 @@ $pb->checkout->expire('cs_xxxxxxxxxxxxxxxx');
 ```php
 // routes/web.php
 Route::post('/checkout', function (Request $request) {
-    $pb = new PayBridge(['api_key' => config('services.paybridge.key')]);
+    $pb = new PayBridgeNP(['api_key' => config('services.paybridge.key')]);
 
     $session = $pb->checkout->create([
         'amount'     => $request->input('amount'),
@@ -152,7 +152,7 @@ echo $payment['metadata']['order_id']; // data you passed at checkout
 
 ## Webhooks
 
-Webhooks let PayBridge notify your server when a payment is completed or fails. You register an endpoint URL, and we POST a signed JSON payload to it for every event.
+Webhooks let PayBridgeNP notify your server when a payment is completed or fails. You register an endpoint URL, and we POST a signed JSON payload to it for every event.
 
 ### 1. Register an endpoint
 
@@ -178,15 +178,15 @@ Always verify the signature before trusting the payload.
 
 require 'vendor/autoload.php';
 
-use PayBridgeNP\PayBridge;
+use PayBridgeNP\PayBridgeNP;
 use PayBridgeNP\Exceptions\SignatureVerificationException;
 
 $payload   = file_get_contents('php://input');
 $signature = $_SERVER['HTTP_X_PAYBRIDGE_SIGNATURE'] ?? null;
-$secret    = getenv('PAYBRIDGE_WEBHOOK_SECRET'); // whsec_...
+$secret    = getenv('PAYBRIDGENP_WEBHOOK_SECRET'); // whsec_...
 
 try {
-    $event = PayBridge::webhooks()->constructEvent($payload, $signature, $secret);
+    $event = PayBridgeNP::webhooks()->constructEvent($payload, $signature, $secret);
 } catch (SignatureVerificationException $e) {
     http_response_code(400);
     exit('Invalid signature');
@@ -221,7 +221,7 @@ Route::post('/webhooks/paybridge', [WebhookController::class, 'handle']);
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use PayBridgeNP\PayBridge;
+use PayBridgeNP\PayBridgeNP;
 use PayBridgeNP\Exceptions\SignatureVerificationException;
 
 class WebhookController extends Controller
@@ -229,9 +229,9 @@ class WebhookController extends Controller
     public function handle(Request $request)
     {
         try {
-            $event = PayBridge::webhooks()->constructEvent(
+            $event = PayBridgeNP::webhooks()->constructEvent(
                 $request->getContent(),
-                $request->header('X-PayBridge-Signature'),
+                $request->header('X-PayBridgeNP-Signature'),
                 config('services.paybridge.webhook_secret')
             );
         } catch (SignatureVerificationException $e) {

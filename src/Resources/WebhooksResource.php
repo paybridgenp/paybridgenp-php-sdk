@@ -87,21 +87,21 @@ class WebhooksResource
      * Pass the RAW request body string — do NOT json_decode it first.
      *
      * Example (plain PHP):
-     *   $event = PayBridge::webhooks()->constructEvent(
+     *   $event = PayBridgeNP::webhooks()->constructEvent(
      *       file_get_contents('php://input'),
      *       $_SERVER['HTTP_X_PAYBRIDGE_SIGNATURE'],
      *       'whsec_...'
      *   );
      *
      * Example (Laravel):
-     *   $event = PayBridge::webhooks()->constructEvent(
+     *   $event = PayBridgeNP::webhooks()->constructEvent(
      *       $request->getContent(),
-     *       $request->header('X-PayBridge-Signature'),
+     *       $request->header('X-PayBridgeNP-Signature'),
      *       config('services.paybridge.webhook_secret')
      *   );
      *
      * @param string      $payload   Raw request body
-     * @param string|null $signature Value of the X-PayBridge-Signature header
+     * @param string|null $signature Value of the X-PayBridgeNP-Signature header
      * @param string      $secret    Your webhook signing secret (whsec_...)
      *
      * @return array<string,mixed>  The parsed event: ['id', 'type', 'created', 'data']
@@ -111,7 +111,7 @@ class WebhooksResource
     public function constructEvent(string $payload, ?string $signature, string $secret): array
     {
         if ($signature === null || $signature === '') {
-            throw new SignatureVerificationException('Missing X-PayBridge-Signature header');
+            throw new SignatureVerificationException('Missing X-PayBridgeNP-Signature header');
         }
 
         // Parse "t=<timestamp>,v1=<hex>" format
@@ -124,7 +124,7 @@ class WebhooksResource
         }
 
         if (empty($parts['t']) || empty($parts['v1'])) {
-            throw new SignatureVerificationException('Malformed X-PayBridge-Signature header');
+            throw new SignatureVerificationException('Malformed X-PayBridgeNP-Signature header');
         }
 
         $timestamp = (int) $parts['t'];
@@ -157,8 +157,8 @@ class WebhooksResource
         if ($this->http === null) {
             throw new \RuntimeException(
                 'This WebhooksResource has no HTTP client. ' .
-                'Use $pb->webhooks->create() on a PayBridge instance, or ' .
-                'PayBridge::webhooks()->constructEvent() for signature verification only.'
+                'Use $pb->webhooks->create() on a PayBridgeNP instance, or ' .
+                'PayBridgeNP::webhooks()->constructEvent() for signature verification only.'
             );
         }
     }
