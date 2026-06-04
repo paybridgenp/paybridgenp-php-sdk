@@ -49,7 +49,7 @@ class SubscriptionsResource
      * @param array{
      *   page?: int,
      *   limit?: int,
-     *   status?: 'active'|'past_due'|'paused'|'cancelled'|'completed',
+     *   status?: 'incomplete'|'incomplete_expired'|'active'|'past_due'|'paused'|'cancelled'|'completed',
      *   customerId?: string,
      *   planId?: string
      * } $params
