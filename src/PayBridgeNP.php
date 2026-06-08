@@ -15,6 +15,7 @@ use PayBridgeNP\Resources\PromotionCodesResource;
 use PayBridgeNP\Resources\QrResource;
 use PayBridgeNP\Resources\RefundsResource;
 use PayBridgeNP\Resources\SubscriptionsResource;
+use PayBridgeNP\Resources\TaxResource;
 use PayBridgeNP\Resources\WebhooksResource;
 
 /**
@@ -76,6 +77,9 @@ class PayBridgeNP
 
     /** @var DunningResource|null */
     private $dunningResource;
+
+    /** @var TaxResource|null */
+    private $taxResource;
 
     /** @var QrResource|null */
     private $qrResource;
@@ -217,6 +221,14 @@ class PayBridgeNP
             $this->dunningResource = new DunningResource($this->httpClient);
         }
         return $this->dunningResource;
+    }
+
+    public function getTax(): TaxResource
+    {
+        if ($this->taxResource === null) {
+            $this->taxResource = new TaxResource($this->httpClient);
+        }
+        return $this->taxResource;
     }
 
     /**
