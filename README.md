@@ -19,9 +19,9 @@ composer require paybridge-np/sdk
 ```php
 use PayBridgeNP\PayBridgeNP;
 
-$pb = new PayBridgeNP(['api_key' => 'sk_test_...']);
+$paybridgenp = new PayBridgeNP(['api_key' => 'sk_test_...']);
 
-$session = $pb->checkout->create([
+$session = $paybridgenp->checkout->create([
     'amount'     => 5000,          // NPR 50.00 — always in paisa (NPR × 100)
     'return_url' => 'https://myshop.com/thank-you',
     'cancel_url' => 'https://myshop.com/cart',
@@ -43,7 +43,7 @@ https://myshop.com/thank-you?session_id=cs_xxx&status=success&payment_id=pay_xxx
 ## Configuration
 
 ```php
-$pb = new PayBridgeNP([
+$paybridgenp = new PayBridgeNP([
     'api_key'     => 'sk_live_...',              // required
     'base_url'    => 'https://api.paybridgenp.com', // optional, default shown
     'timeout'     => 30,                         // optional, seconds (default: 30)
@@ -60,7 +60,7 @@ Use `sk_test_` keys for sandbox mode — no real money moves. Switch to `sk_live
 ### Create a session
 
 ```php
-$session = $pb->checkout->create([
+$session = $paybridgenp->checkout->create([
     'amount'     => 10000,       // NPR 100.00 in paisa — required
     'return_url' => 'https://myshop.com/thank-you', // required
     'cancel_url' => 'https://myshop.com/cart',       // optional
@@ -84,7 +84,7 @@ If you pass `provider` upfront, the response also includes `payment_method` with
 Use this when you mint a fresh session for a logical purchase that already had one outstanding (e.g. a customer requesting a new payment link), so the old URL stops being payable immediately rather than waiting for its 30-minute TTL. Idempotent on already-terminal sessions.
 
 ```php
-$pb->checkout->expire('cs_xxxxxxxxxxxxxxxx');
+$paybridgenp->checkout->expire('cs_xxxxxxxxxxxxxxxx');
 ```
 
 ### Laravel example
@@ -92,9 +92,9 @@ $pb->checkout->expire('cs_xxxxxxxxxxxxxxxx');
 ```php
 // routes/web.php
 Route::post('/checkout', function (Request $request) {
-    $pb = new PayBridgeNP(['api_key' => config('services.paybridge.key')]);
+    $paybridgenp = new PayBridgeNP(['api_key' => config('services.paybridgenp.key')]);
 
-    $session = $pb->checkout->create([
+    $session = $paybridgenp->checkout->create([
         'amount'     => $request->input('amount'),
         'return_url' => route('checkout.return'),
         'cancel_url' => route('checkout.cancel'),
@@ -123,7 +123,7 @@ Route::get('/checkout/return', function (Request $request) {
 ### List payments
 
 ```php
-$result = $pb->payments->list(['limit' => 20, 'offset' => 0]);
+$result = $paybridgenp->payments->list(['limit' => 20, 'offset' => 0]);
 
 foreach ($result['data'] as $payment) {
     echo $payment['id'];        // pay_xxxxxxxxxxxxxxxx
@@ -141,7 +141,7 @@ $offset = $result['meta']['offset'];
 ### Retrieve a payment
 
 ```php
-$payment = $pb->payments->get('pay_xxxxxxxxxxxxxxxx');
+$payment = $paybridgenp->payments->get('pay_xxxxxxxxxxxxxxxx');
 
 echo $payment['status'];       // success
 echo $payment['provider_ref']; // provider's own transaction ID
@@ -157,8 +157,8 @@ Webhooks let PayBridgeNP notify your server when a payment is completed or fails
 ### 1. Register an endpoint
 
 ```php
-$endpoint = $pb->webhooks->create([
-    'url'    => 'https://myshop.com/webhooks/paybridge',
+$endpoint = $paybridgenp->webhooks->create([
+    'url'    => 'https://myshop.com/webhooks/paybridgenp',
     'events' => ['payment.succeeded', 'payment.failed'],
 ]);
 
@@ -211,7 +211,7 @@ http_response_code(200);
 
 ```php
 // routes/api.php
-Route::post('/webhooks/paybridge', [WebhookController::class, 'handle']);
+Route::post('/webhooks/paybridgenp', [WebhookController::class, 'handle']);
 ```
 
 ```php
@@ -232,7 +232,7 @@ class WebhookController extends Controller
             $event = PayBridgeNP::webhooks()->constructEvent(
                 $request->getContent(),
                 $request->header('X-PayBridgeNP-Signature'),
-                config('services.paybridge.webhook_secret')
+                config('services.paybridgenp.webhook_secret')
             );
         } catch (SignatureVerificationException $e) {
             return response('Invalid signature', 400);
@@ -268,10 +268,10 @@ class WebhookController extends Controller
 
 ```php
 // List all endpoints
-$endpoints = $pb->webhooks->list();
+$endpoints = $paybridgenp->webhooks->list();
 
 // Delete an endpoint
-$pb->webhooks->delete('we_xxxxxxxxxxxxxxxx');
+$paybridgenp->webhooks->delete('we_xxxxxxxxxxxxxxxx');
 ```
 
 ---
@@ -317,7 +317,7 @@ use PayBridgeNP\Exceptions\RateLimitException;
 use PayBridgeNP\Exceptions\SignatureVerificationException;
 
 try {
-    $session = $pb->checkout->create(['amount' => 5000, 'return_url' => 'https://...']);
+    $session = $paybridgenp->checkout->create(['amount' => 5000, 'return_url' => 'https://...']);
 } catch (AuthenticationException $e) {
     // Invalid or missing API key
     echo $e->getMessage();      // "Invalid or missing API key"

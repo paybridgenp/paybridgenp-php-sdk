@@ -101,4 +101,43 @@ class CheckoutResource
     {
         return $this->http->post('/v1/checkout/' . rawurlencode($id) . '/expire', []);
     }
+
+    /**
+     * Retrieve a checkout session by ID, including its current status, amount,
+     * customer, and any collected address. Read-only — sessions are created via
+     * `create()`. Hits `GET /v1/sessions/{id}`.
+     *
+     * Note: this richer read shape uses camelCase keys (`customerName`,
+     * `expiresAt`, …), unlike the snake_case `create()` response.
+     *
+     * @return array<string,mixed>
+     */
+    public function get(string $id): array
+    {
+        return $this->http->get('/v1/sessions/' . rawurlencode($id));
+    }
+
+    /**
+     * List checkout sessions for the authenticated project, newest first.
+     * Optionally filter by `status` and page with `limit`/`offset`.
+     *
+     * @param array{limit?: int, offset?: int, status?: string} $params
+     *
+     * @return array{
+     *   data: array<int, array<string,mixed>>,
+     *   meta: array{total: int, limit: int, offset: int}
+     * }
+     */
+    public function list(array $params = []): array
+    {
+        $query = http_build_query(array_filter([
+            'limit'  => $params['limit']  ?? null,
+            'offset' => $params['offset'] ?? null,
+            'status' => $params['status'] ?? null,
+        ], fn($v) => $v !== null));
+
+        $path = '/v1/sessions' . ($query !== '' ? '?' . $query : '');
+
+        return $this->http->get($path);
+    }
 }

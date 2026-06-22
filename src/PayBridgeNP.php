@@ -9,6 +9,7 @@ use PayBridgeNP\Resources\CouponsResource;
 use PayBridgeNP\Resources\CustomersResource;
 use PayBridgeNP\Resources\DunningResource;
 use PayBridgeNP\Resources\InvoicesResource;
+use PayBridgeNP\Resources\PaymentLinksResource;
 use PayBridgeNP\Resources\PaymentsResource;
 use PayBridgeNP\Resources\PlansResource;
 use PayBridgeNP\Resources\PromotionCodesResource;
@@ -50,6 +51,9 @@ class PayBridgeNP
 
     /** @var PaymentsResource|null */
     private $paymentsResource;
+
+    /** @var PaymentLinksResource|null */
+    private $paymentLinksResource;
 
     /** @var RefundsResource|null */
     private $refundsResource;
@@ -121,6 +125,18 @@ class PayBridgeNP
             $this->paymentsResource = new PaymentsResource($this->httpClient);
         }
         return $this->paymentsResource;
+    }
+
+    /**
+     * Payment links resource — create / list / get / update / cancel / delete
+     * reusable hosted payment pages.
+     */
+    public function getPaymentLinks(): PaymentLinksResource
+    {
+        if ($this->paymentLinksResource === null) {
+            $this->paymentLinksResource = new PaymentLinksResource($this->httpClient);
+        }
+        return $this->paymentLinksResource;
     }
 
     /**
@@ -262,6 +278,9 @@ class PayBridgeNP
                 return $this->getCheckout();
             case 'payments':
                 return $this->getPayments();
+            case 'paymentLinks':
+            case 'payment_links':
+                return $this->getPaymentLinks();
             case 'refunds':
                 return $this->getRefunds();
             case 'webhooks':
