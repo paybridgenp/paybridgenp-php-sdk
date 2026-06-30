@@ -58,4 +58,32 @@ class QrResource
     {
         return $this->http->post('/v1/qr/fonepay', $params);
     }
+
+    /**
+     * Refresh a Direct-QR session: regenerate a fresh Fonepay QR for the SAME
+     * session (same id, events_url, and webhook) without spawning a new
+     * session. The Fonepay QR display window is only ~3 minutes, so call this
+     * when `qr.expired` fires (or proactively) to keep a scannable QR on
+     * screen. Takes no body. The session's overall lifetime is unchanged.
+     *
+     * Premium feature — the merchant must be on the Premium plan.
+     *
+     * @param string $id Direct-QR session id (prefix: cs_).
+     *
+     * @return array{
+     *   id: string,
+     *   amount: int,
+     *   currency: string,
+     *   provider: string,
+     *   status: string,
+     *   qr_message: string,
+     *   qr_image: string,
+     *   events_url: string,
+     *   expires_at: string
+     * }
+     */
+    public function refresh(string $id): array
+    {
+        return $this->http->post('/v1/qr/' . rawurlencode($id) . '/refresh', []);
+    }
 }

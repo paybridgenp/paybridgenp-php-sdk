@@ -17,7 +17,7 @@ class HttpClient
     private const DEFAULT_MAX_RETRIES = 2;
     private const INITIAL_BACKOFF_MS  = 500;
     private const RETRY_STATUSES      = [500, 502, 503, 504];
-    private const SDK_VERSION         = '3.0.0';
+    private const SDK_VERSION         = '5.2.0';
 
     /** @var string */
     private $baseUrl;

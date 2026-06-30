@@ -87,6 +87,16 @@ Use this when you mint a fresh session for a logical purchase that already had o
 $paybridgenp->checkout->expire('cs_xxxxxxxxxxxxxxxx');
 ```
 
+### Retrieve / list sessions
+
+Read-only. Sessions are created with `create()`. The read shape uses camelCase keys (`customerName`, `expiresAt`, …).
+
+```php
+$session  = $paybridgenp->checkout->get('cs_xxxxxxxxxxxxxxxx');
+$sessions = $paybridgenp->checkout->list(['limit' => 20, 'status' => 'success']);
+// $sessions['data'], $sessions['meta']['total']
+```
+
 ### Laravel example
 
 ```php
@@ -146,6 +156,42 @@ $payment = $paybridgenp->payments->get('pay_xxxxxxxxxxxxxxxx');
 echo $payment['status'];       // success
 echo $payment['provider_ref']; // provider's own transaction ID
 echo $payment['metadata']['order_id']; // data you passed at checkout
+```
+
+---
+
+## Payment links
+
+Reusable hosted payment pages. Responses use camelCase keys.
+
+```php
+// Create
+$link = $paybridgenp->paymentLinks->create(['title' => 'Donation', 'amount' => 50000]);
+
+// List, retrieve (with view/conversion stats), update, cancel, or delete
+$links  = $paybridgenp->paymentLinks->list(['active' => true]);
+$detail = $paybridgenp->paymentLinks->get($link['id']);
+$paybridgenp->paymentLinks->update($link['id'], ['active' => false]);
+$paybridgenp->paymentLinks->cancel($link['id']); // deactivate, keep for records
+$paybridgenp->paymentLinks->delete($link['id']); // only if never used
+```
+
+---
+
+## Direct-QR (Fonepay)
+
+Premium feature — mint a Fonepay QR server-side and embed it in your own UI, skipping the hosted checkout page. Subscribe to `events_url` (SSE) for `qr.scanned` / `qr.paid` / `qr.expired`.
+
+```php
+$qr = $paybridgenp->qr->fonepay([
+    'amount'   => 10000, // paisa
+    'customer' => ['name' => 'Aarav Sharma', 'email' => 'aarav@example.com'],
+]);
+// $qr['qr_image'] (PNG data URL), $qr['qr_message'], $qr['events_url'], $qr['expires_at']
+
+// The QR display window is ~3 min. Refresh it for the SAME session — same id,
+// events_url, and webhook — without spawning a new session. Lifetime unchanged.
+$fresh = $paybridgenp->qr->refresh($qr['id']);
 ```
 
 ---
