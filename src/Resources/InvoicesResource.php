@@ -55,4 +55,24 @@ class InvoicesResource
     {
         return $this->http->get('/v1/billing/invoices/' . rawurlencode($invoiceId));
     }
+
+    /**
+     * Mint a Fonepay Direct-QR to pay this invoice. The customer scans it (in
+     * your own UI / at a counter) and on success the invoice is marked paid and
+     * the subscription activates (incomplete->active) -- the same outcome as the
+     * hosted bill page. Returns a normal Direct-QR session (use its events_url
+     * SSE stream + qr->refresh()).
+     *
+     * Premium feature; requires the `billing:write` scope and Fonepay configured.
+     *
+     * @return array{
+     *   id: string, invoice_id: string, amount: int, currency: string,
+     *   provider: string, status: string, qr_message: string, qr_image: string,
+     *   events_url: string, expires_at: string
+     * }
+     */
+    public function qr(string $invoiceId): array
+    {
+        return $this->http->post('/v1/billing/invoices/' . rawurlencode($invoiceId) . '/qr', []);
+    }
 }
