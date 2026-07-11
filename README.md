@@ -228,7 +228,7 @@ use PayBridgeNP\PayBridgeNP;
 use PayBridgeNP\Exceptions\SignatureVerificationException;
 
 $payload   = file_get_contents('php://input');
-$signature = $_SERVER['HTTP_X_PAYBRIDGE_SIGNATURE'] ?? null;
+$signature = $_SERVER['HTTP_X_PAYBRIDGENP_SIGNATURE'] ?? null;
 $secret    = getenv('PAYBRIDGENP_WEBHOOK_SECRET'); // whsec_...
 
 try {

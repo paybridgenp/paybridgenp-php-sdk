@@ -37,7 +37,7 @@ use PayBridgeNP\Resources\WebhooksResource;
  *   // Verify a webhook
  *   $event = PayBridgeNP::webhooks()->constructEvent(
  *       file_get_contents('php://input'),
- *       $_SERVER['HTTP_X_PAYBRIDGE_SIGNATURE'] ?? null,
+ *       $_SERVER['HTTP_X_PAYBRIDGENP_SIGNATURE'] ?? null,
  *       'whsec_...'
  *   );
  */
@@ -313,7 +313,7 @@ class PayBridgeNP
      * @example
      *   $event = PayBridgeNP::webhooks()->constructEvent(
      *       file_get_contents('php://input'),
-     *       $_SERVER['HTTP_X_PAYBRIDGE_SIGNATURE'] ?? null,
+     *       $_SERVER['HTTP_X_PAYBRIDGENP_SIGNATURE'] ?? null,
      *       'whsec_...'
      *   );
      */

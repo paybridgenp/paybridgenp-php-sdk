@@ -89,7 +89,7 @@ class WebhooksResource
      * Example (plain PHP):
      *   $event = PayBridgeNP::webhooks()->constructEvent(
      *       file_get_contents('php://input'),
-     *       $_SERVER['HTTP_X_PAYBRIDGE_SIGNATURE'],
+     *       $_SERVER['HTTP_X_PAYBRIDGENP_SIGNATURE'],
      *       'whsec_...'
      *   );
      *
