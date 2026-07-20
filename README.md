@@ -1,6 +1,6 @@
-# PayBridgeNP — PHP SDK
+# PayBridgeNP - PHP SDK
 
-Official PHP SDK for [PayBridgeNP](https://paybridgenp.com) — accept eSewa, Khalti, and Fonepay through a single API.
+Official PHP SDK for [PayBridgeNP](https://paybridgenp.com) - accept eSewa, Khalti, and Fonepay through a single API.
 
 **Requirements:** PHP 7.4+, `ext-curl`, `ext-json`
 
@@ -22,7 +22,7 @@ use PayBridgeNP\PayBridgeNP;
 $paybridgenp = new PayBridgeNP(['api_key' => 'sk_test_...']);
 
 $session = $paybridgenp->checkout->create([
-    'amount'     => 5000,          // NPR 50.00 — always in paisa (NPR × 100)
+    'amount'     => 5000,          // NPR 50.00 - always in paisa (NPR × 100)
     'return_url' => 'https://myshop.com/thank-you',
     'cancel_url' => 'https://myshop.com/cart',
     'metadata'   => ['order_id' => 'ORD-001'],
@@ -51,7 +51,7 @@ $paybridgenp = new PayBridgeNP([
 ]);
 ```
 
-Use `sk_test_` keys for sandbox mode — no real money moves. Switch to `sk_live_` for production.
+Use `sk_test_` keys for sandbox mode. eSewa and Khalti sandbox run on provider test environments, so no real money moves; sandbox Fonepay uses your own Fonepay credentials and moves real money within tight caps. Switch to `sk_live_` for production.
 
 ---
 
@@ -61,23 +61,23 @@ Use `sk_test_` keys for sandbox mode — no real money moves. Switch to `sk_live
 
 ```php
 $session = $paybridgenp->checkout->create([
-    'amount'     => 10000,       // NPR 100.00 in paisa — required
+    'amount'     => 10000,       // NPR 100.00 in paisa - required
     'return_url' => 'https://myshop.com/thank-you', // required
     'cancel_url' => 'https://myshop.com/cart',       // optional
-    'provider'   => 'esewa',     // optional — omit to let the customer pick
+    'provider'   => 'esewa',     // optional - omit to let the customer pick
     'currency'   => 'NPR',       // optional, default: NPR
-    'metadata'   => [            // optional — any key/value pairs
+    'metadata'   => [            // optional - any key/value pairs
         'order_id'       => 'ORD-001',
         'customer_email' => 'ram@example.com',
     ],
 ]);
 
-// $session['id']           — cs_xxxxxxxxxxxxxxxx
-// $session['checkout_url'] — redirect the customer here
-// $session['expires_at']   — ISO 8601 timestamp (1 hour from creation)
+// $session['id']           - cs_xxxxxxxxxxxxxxxx
+// $session['checkout_url'] - redirect the customer here
+// $session['expires_at']   - ISO 8601 timestamp (1 hour from creation)
 ```
 
-If you pass `provider` upfront, the response also includes `payment_method` with the direct redirect URL or form fields — useful if you want to skip the hosted page entirely.
+If you pass `provider` upfront, the response also includes `payment_method` with the direct redirect URL or form fields - useful if you want to skip the hosted page entirely.
 
 ### Expire a session
 
@@ -180,7 +180,7 @@ $paybridgenp->paymentLinks->delete($link['id']); // only if never used
 
 ## Direct-QR (Fonepay)
 
-Premium feature — mint a Fonepay QR server-side and embed it in your own UI, skipping the hosted checkout page. Subscribe to `events_url` (SSE) for `qr.scanned` / `qr.paid` / `qr.expired`.
+Premium feature - mint a Fonepay QR server-side and embed it in your own UI, skipping the hosted checkout page. Subscribe to `events_url` (SSE) for `qr.scanned` / `qr.paid` / `qr.expired`.
 
 ```php
 $qr = $paybridgenp->qr->fonepay([
@@ -189,8 +189,8 @@ $qr = $paybridgenp->qr->fonepay([
 ]);
 // $qr['qr_image'] (PNG data URL), $qr['qr_message'], $qr['events_url'], $qr['expires_at']
 
-// The QR display window is ~3 min. Refresh it for the SAME session — same id,
-// events_url, and webhook — without spawning a new session. Lifetime unchanged.
+// The QR display window is ~3 min. Refresh it for the SAME session - same id,
+// events_url, and webhook - without spawning a new session. Lifetime unchanged.
 $fresh = $paybridgenp->qr->refresh($qr['id']);
 ```
 
@@ -306,7 +306,7 @@ class WebhookController extends Controller
 }
 ```
 
-> **Important:** Always pass the **raw** request body to `constructEvent()` — do not `json_decode` it first. The HMAC is computed over the raw string.
+> **Important:** Always pass the **raw** request body to `constructEvent()` - do not `json_decode` it first. The HMAC is computed over the raw string.
 
 > **Important:** Disable CSRF verification for your webhook route in Laravel (`VerifyCsrfToken` middleware).
 
@@ -370,10 +370,10 @@ try {
     echo $e->getStatusCode();   // 401
     echo $e->getErrorCode();    // "authentication_error"
 } catch (InvalidRequestException $e) {
-    // Bad parameters — check $e->getRaw() for field-level details
+    // Bad parameters - check $e->getRaw() for field-level details
     print_r($e->getRaw());
 } catch (RateLimitException $e) {
-    // Too many requests — back off and retry
+    // Too many requests - back off and retry
     sleep(5);
 } catch (PayBridgeException $e) {
     // Catch-all for any other API error
@@ -399,14 +399,7 @@ try {
 
 ## Sandbox Testing
 
-Use `sk_test_` API keys to test without real money. The sandbox uses provider test environments:
-
-| Provider | Test credentials |
-|---|---|
-| eSewa | Merchant code: `EPAYTEST`, secret: `8gBm/:&EnhH.1/q` — pre-configured, no setup needed |
-| Khalti | Secret key: `test_secret_key_f59e8b7d18b4499ca40f68195a846e9b` — pre-configured |
-
-In sandbox mode, no provider credentials need to be configured in the dashboard — built-in test credentials are used automatically.
+Use `sk_test_` API keys for development. Sandbox eSewa and Khalti run on the providers' official test environments with built-in test credentials, so nothing needs configuring in the dashboard and no real money moves. Fonepay has no test environment: sandbox Fonepay uses your own Fonepay credentials and moves real money, capped at NPR 1,000 per payment and NPR 5,000 per month.
 
 ---
 
